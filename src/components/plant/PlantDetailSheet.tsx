@@ -15,6 +15,7 @@ import {
   Check,
   Flag,
   Camera,
+  ExternalLink,
 } from 'lucide-react';
 
 import { formatDistance } from '../../lib/formatters';
@@ -253,6 +254,22 @@ export const PlantDetailSheet: React.FC<PlantDetailSheetProps> = ({
           {/* Etiquette & Medical Guidelines */}
           <HarvestingEtiquetteBanner />
           <MedicalDisclaimerBanner />
+
+          {/* Data Attribution & Provenance Card */}
+          <div className="p-3 bg-stone-50 dark:bg-stone-800/40 rounded-xl border border-stone-200 dark:border-stone-800 text-xs space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-stone-700 dark:text-stone-300 flex items-center gap-1">
+                <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+                <span>Source Provenance</span>
+              </span>
+              <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 rounded font-mono text-[10px] font-semibold uppercase">
+                {plant.license}
+              </span>
+            </div>
+            <p className="text-stone-500 text-[11px] leading-relaxed">
+              {plant.attribution}
+            </p>
+          </div>
 
           {/* Verification & Attribution Footer */}
           <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-[11px] text-stone-500">

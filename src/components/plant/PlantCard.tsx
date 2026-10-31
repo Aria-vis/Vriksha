@@ -99,6 +99,10 @@ export const PlantCard: React.FC<PlantCardProps> = ({
               {plant.land_type}
             </span>
 
+            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200/60 rounded-md uppercase font-mono font-medium">
+              {plant.source}
+            </span>
+
             {plant.is_sacred_heritage && (
               <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-900 font-semibold rounded-md">
                 Heritage

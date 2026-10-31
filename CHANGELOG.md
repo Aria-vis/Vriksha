@@ -4,6 +4,25 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 4: Data Import Pipeline & Attribution UI] - 2026-10-31
+
+### Added
+- **OpenStreetMap Overpass Service & Ingestion Tool**:
+  - `src/services/overpassService.ts`: Bounding box and radius Overpass query builders, normalizer with ODbL licensing and OSM contributor attribution.
+  - `scripts/import-osm-overpass.ts`: CLI script querying Overpass API for trees across Indian cities and mapping them to Vriksha's 80 species.
+- **iNaturalist Research-Grade API Service & Ingest Script**:
+  - `src/services/inaturalistService.ts`: India-focused (`place_id=6681`) query builder for useful species.
+  - Strict license validator: Ingests only CC0, CC BY, and CC BY-NC observations; strictly excludes all-rights-reserved records.
+  - Respects coordinate obscuration and attaches observer credit + photo licenses.
+  - `scripts/import-inaturalist.ts`: CLI ingest tool with rate limiting and logging.
+- **Attribution & Provenance UI**:
+  - Prominent Source Provenance Card in `PlantDetailSheet.tsx` displaying data source (`OSM`, `iNaturalist`, `Community`), license badge (`ODbL`, `CC BY-NC 4.0`), and author attribution string.
+  - Compact provenance chip on all `PlantCard.tsx` items.
+- **Testing & Verification**:
+  - `tests/unit/dataImport.test.ts`: 6 unit tests covering Overpass queries, ODbL normalizer, and iNaturalist open license compliance.
+
+---
+
 ## [Milestone 3: Auth, Add Plant, Verify/Report Flow & Offline Queue] - 2026-10-31
 
 ### Added
