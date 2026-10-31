@@ -89,6 +89,8 @@ npm run preview
 4. **Medical Disclaimer**: All medicinal descriptions carry: *"Traditional use. Not medical advice."*
 5. **Private Property Consent**: Markings on private land require explicit landowner permission confirmation.
 6. **Zero Contributor Location Tracking**: Contributor home locations are never stored or exposed.
+7. **Moderator Tools & Community Review**: In-app moderation dashboard (`ModerationDashboard.tsx`) with community report review queue, duplicate tree merging tool (`duplicateDetection.ts`), and dynamic species privacy toggle.
+8. **In-App Privacy Policy**: Transparent modal (`PrivacyPolicyModal.tsx`) detailing exact privacy guarantees and botanical protection policies.
 
 ---
 

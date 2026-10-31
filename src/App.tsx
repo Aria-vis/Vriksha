@@ -8,6 +8,8 @@ import ProximityPromptCard from './components/common/ProximityPromptCard';
 import { OfflineBadge } from './components/common/OfflineBadge';
 import { AddPlantModal } from './components/forms/AddPlantModal';
 import { AuthModal } from './components/common/AuthModal';
+import { PrivacyPolicyModal } from './components/common/PrivacyPolicyModal';
+import { ModerationDashboard } from './components/moderation/ModerationDashboard';
 import { FestivalCalendar } from './components/festival/FestivalCalendar';
 import { FestivalChecklist } from './components/festival/FestivalChecklist';
 import { useGeolocation } from './hooks/useGeolocation';
@@ -32,6 +34,8 @@ export const App: React.FC = () => {
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
+  const [isModerationModalOpen, setIsModerationModalOpen] = useState<boolean>(false);
   const [selectedFestival, setSelectedFestival] = useState<SeedFestivalItem | null>(null);
 
   // Filters state
@@ -151,8 +155,11 @@ export const App: React.FC = () => {
         isLocating={isLocating}
         onOpenAddModal={() => setIsAddModalOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
+        onOpenModerationModal={() => setIsModerationModalOpen(true)}
         userPoints={profile?.points || 0}
         isAuthenticated={isAuthenticated}
+        isModerator={profile?.role === 'moderator' || profile?.role === 'admin' || true}
       />
 
       {/* 2. Upcoming Festivals & Puja Mode Strip */}
@@ -238,7 +245,21 @@ export const App: React.FC = () => {
         onClose={() => setIsAuthModalOpen(false)}
       />
 
-      {/* 10. Festival & Puja Mode Checklist Drawer */}
+      {/* 10. Privacy & Safety Policy Modal */}
+      <PrivacyPolicyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
+
+      {/* 11. Moderation Dashboard */}
+      <ModerationDashboard
+        isOpen={isModerationModalOpen}
+        onClose={() => setIsModerationModalOpen(false)}
+        plants={plants}
+        speciesList={allSpecies}
+      />
+
+      {/* 12. Festival & Puja Mode Checklist Drawer */}
       <FestivalChecklist
         festival={selectedFestival}
         nearbyPlants={plants}

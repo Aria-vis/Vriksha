@@ -4,6 +4,33 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 6: Moderation Dashboard & Privacy Protection] - 2026-10-31
+
+### Added
+- **Restricted Species Privacy Shield (`nearest_plants` PostGIS RPC & ADR 002)**:
+  - Strict ~5 km grid centroid coordinate fuzzing for vulnerable and commercially targeted flora (*Santalum album* / Sandalwood, *Pterocarpus santalinus* / Red Sanders).
+  - Exact coordinates accessible exclusively to users with `moderator` or `admin` roles, preventing illegal poaching and commercial exploitation.
+  - Automated test suite (`tests/unit/moderationAndPrivacy.test.ts`) proving coordinates cannot leak to standard users and verify ~5 km displacement.
+- **Comprehensive Privacy Policy Modal (`PrivacyPolicyModal.tsx`)**:
+  - Explains the ~5 km fuzzy location shield for restricted flora.
+  - Documents zero contributor location tracking (contributor home locations are never requested, stored, or revealed).
+  - Mandatory private property consent and landowner approval policy.
+  - Clear sustainable harvesting etiquette guidance (take only leaves needed, never strip bark or uproot, ask permission).
+- **Moderation Dashboard (`ModerationDashboard.tsx`)**:
+  - Tabbed interface uniting community report queue, duplicate tree cleanup, species privacy management, and audit log.
+- **Community Report Queue (`ReportQueue.tsx`)**:
+  - Actionable queue for tree gone reports, wrong species flags, private property removal requests, and spam.
+  - Allows moderators to review community feedback and take down invalid listings with 1 tap.
+- **Duplicate Tree Merge Tool (`DuplicateMergeTool.tsx` & `duplicateDetection.ts`)**:
+  - Spatial deduplication utility detecting matching species records within 15–25 meters.
+  - Side-by-side comparison interface enabling moderators to select the canonical record and consolidate photo timelines and verification history.
+- **Species Protection Manager (`SpeciesManagement.tsx`)**:
+  - Searchable interface allowing moderators to toggle the restricted species fuzzing shield dynamically across all 80 species.
+- **Testing & Verification**:
+  - `tests/unit/moderationAndPrivacy.test.ts`: 5 tests verifying restricted species coordinate displacement, unmasking for moderators, and spatial duplicate clustering.
+
+---
+
 ## [Milestone 5: Festival & Puja Mode + Trip Planner] - 2026-10-31
 
 ### Added

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trees, Compass, Plus, ChevronDown, MapPin, Check } from 'lucide-react';
+import { Trees, Compass, Plus, ChevronDown, MapPin, Check, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { INDIAN_CITY_PRESETS } from '../../hooks/useGeolocation';
 
 interface HeaderProps {
@@ -10,8 +10,11 @@ interface HeaderProps {
   isLocating: boolean;
   onOpenAddModal: () => void;
   onOpenAuthModal?: () => void;
+  onOpenPrivacyModal?: () => void;
+  onOpenModerationModal?: () => void;
   userPoints?: number;
   isAuthenticated?: boolean;
+  isModerator?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,8 +25,11 @@ export const Header: React.FC<HeaderProps> = ({
   isLocating,
   onOpenAddModal,
   onOpenAuthModal,
+  onOpenPrivacyModal,
+  onOpenModerationModal,
   userPoints = 0,
   isAuthenticated = false,
+  isModerator = false,
 }) => {
   const [showCityMenu, setShowCityMenu] = useState<boolean>(false);
 
@@ -127,6 +133,28 @@ export const Header: React.FC<HeaderProps> = ({
           <Compass className={`w-3.5 h-3.5 text-brand-saffron ${isLocating ? 'animate-spin' : ''}`} />
           <span className="hidden md:inline">{isLocating ? 'Locating...' : 'Near Me'}</span>
         </button>
+
+        {/* Privacy Policy Trigger */}
+        <button
+          onClick={onOpenPrivacyModal}
+          className="p-1.5 bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 rounded-full border border-emerald-700/60 transition-colors"
+          title="Privacy & Safety Policy (Protected Species Shield)"
+          aria-label="Privacy and Safety Policy"
+        >
+          <ShieldCheck className="w-4 h-4 text-emerald-300" />
+        </button>
+
+        {/* Moderation Dashboard Trigger (for moderators or admins) */}
+        {isModerator && (
+          <button
+            onClick={onOpenModerationModal}
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-purple-900/80 hover:bg-purple-800 text-purple-200 rounded-full text-xs font-semibold border border-purple-600 transition-colors"
+            title="Open Community Moderation Dashboard"
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-300" />
+            <span className="hidden sm:inline">Mod</span>
+          </button>
+        )}
 
         {/* Add Plant Button */}
         <button
