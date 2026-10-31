@@ -4,6 +4,40 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 8: Community Polish, Creative Extras & Final Verification] - 2026-11-01
+
+### Added
+- **Community "Need It / Have It" Board (`CommunityBoard.tsx`)**:
+  - Neighborhood bulletin board connecting local tree guardians with festival seekers.
+  - Allows citizens to share excess garden offerings (e.g., Bilva/bael leaves, mango leaves, Parijat blossoms, Tulsi manjari) or request needed puja items (e.g., Durva grass for Ganesh Chaturthi, Shami leaves for Dussehra).
+  - Categorized into "Offering / Have It" and "Requesting / Need It" with neighborhood proximity tags and copy-contact support.
+- **Sacred & Heritage Tree Stories (`HeritageStoryModal.tsx` & `src/data/heritageTreesData.ts`)**:
+  - Dedicated heritage catalog celebrating India's ancient living monuments (e.g., Akshaya Vat in Prayagraj, Kabir Vad in Bharuch, Dodda Alada Mara in Bengaluru, the 700-year-old Varanasi Bilva Tree, and Jyotisar Akshayavat in Kurukshetra).
+  - Detailed cultural lore, folklore, oral traditions, and conservation history for each monumental tree.
+- **Civic Nurseries & Free Sapling Distribution Layer (`NurseryModal.tsx` & `src/data/civicNurseriesData.ts`)**:
+  - Searchable directory of official state forest department nurseries (e.g., Delhi Forest Department, Karnataka Forest Nursery, UP Samajik Vaniki, Bihar Van Vibhag).
+  - Outlines available sacred and indigenous sapling species, free seasonal distribution schedules (e.g., Van Mahotsav), and contact guidelines.
+- **Printable Plant QR Code Poster Generator (`PlantQrModal.tsx`)**:
+  - 1-click printable tree steward poster generator for community gardens, housing societies, schools, and temple trusts.
+  - Features real-time high-contrast QR code pointing to the live plant record, species botanical and regional names, flowering/fruiting seasonality calendar, and clear harvesting etiquette guidelines.
+- **Open Data Export Utility (`OpenDataExportModal.tsx`)**:
+  - Complete 1-tap open data export in both GeoJSON (`FeatureCollection`) and tabular CSV formats under the Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license.
+  - Preserves privacy: automatically enforces ~5 km grid centroid fuzzing on restricted species, strips contributor PII, and includes full OpenStreetMap & iNaturalist attribution metadata.
+- **Voice Search Web Speech API Integration (`useVoiceSearch.ts`)**:
+  - Voice-activated plant and tree search built with the native Web Speech Recognition API.
+  - Supports spoken queries in Indian English (`en-IN`) and Hindi (`hi-IN`) directly from the search bar with listening animation and error recovery.
+- **End-to-End Playwright Automated Test Suite (`tests/e2e/vrikshaFlows.spec.ts`)**:
+  - 3 comprehensive browser automation test journeys running against live Chromium:
+    1. *Flow 1*: Header rendering, quick city switcher, search filtering, and bottom sheet view toggles.
+    2. *Flow 2*: 3-step Add Plant wizard modal with strict private property consent validation and photo upload interface.
+    3. *Flow 3*: Festival & Puja Mode calendar switching, basket checklist updates, and multi-stop walking route optimizer.
+- **Testing & Verification**:
+  - `tests/unit/communityAndExport.test.ts`: 4 unit tests verifying GeoJSON export structure, CSV escaping, heritage tree catalog, and civic nurseries.
+  - Vitest test suite expanded to 68 passing tests across 15 test suites.
+  - Playwright E2E suite passes 3/3 browser journeys with 0 errors.
+
+---
+
 ## [Milestone 7: Internationalization, PWA & Outdoor Visibility Pass] - 2026-10-31
 
 ### Added

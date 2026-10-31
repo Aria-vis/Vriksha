@@ -113,6 +113,32 @@ Plants decay according to physical lifespan:
 
 ---
 
+## 🌟 Key Community Features & Tools
+
+- **Festival & Puja Mode**: First-of-its-kind ritual planner featuring checklists of required sacred flora for 12+ Indian festivals (Maha Shivratri, Ganesh Chaturthi, Dussehra, Tulsi Vivah, Chhath Puja, etc.) and a Traveling Salesperson Problem (TSP) multi-stop walking route optimizer ("Plan My Trip").
+- **Community "Need It / Have It" Board**: Neighborhood bulletin board connecting tree guardians with puja seekers for sharing excess garden blossoms and requesting festival leaves.
+- **Sacred & Heritage Tree Stories**: Living cultural monuments catalog (Akshaya Vat in Prayagraj, Kabir Vad in Bharuch, Dodda Alada Mara in Bengaluru, Varanasi 700-year Bilva tree, Kurukshetra Jyotisar Vat) with folklore and conservation notes.
+- **Civic Nurseries & Free Saplings**: Directory of official state forest department nurseries offering free or subsidized saplings during Van Mahotsav and seasonal plantation drives.
+- **Printable Plant QR Posters**: 1-click printable tree steward poster generator with high-contrast QR code, seasonality calendar, and harvesting etiquette for parks, schools, temples, and residential societies.
+- **Open Data Export**: 1-tap download of the Vriksha community tree dataset in GeoJSON (`FeatureCollection`) and CSV formats under CC BY-SA 4.0, preserving species privacy via PostGIS ~5 km coordinate fuzzing.
+- **Voice Search**: Hands-free search built on the native Web Speech API supporting spoken queries in Indian English (`en-IN`) and Hindi (`hi-IN`).
+- **11 Indian Languages**: Full translations in English and Hindi, plus native script stubs for Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, and Odia.
+- **Outdoor High-Contrast Glare Mode**: One-tap toggle optimizing contrast and typography for sunlight readability in gardens and roadsides.
+- **PWA & Offline Queue**: Workbox tile and app caching with Dexie.js (IndexedDB) offline submission queue that automatically syncs when connectivity is restored.
+
+---
+
+## 🧪 Automated Testing Architecture
+
+Vriksha features 100% automated coverage across unit, component, spatial, and browser flows:
+- **Vitest Unit & Component Tests** (`npm test`): 68 tests across 15 test suites validating freshness decay algorithms, route optimization, image compression, Dexie offline queue, i18n translation fallbacks, species data integrity, and moderation workflows.
+- **Playwright E2E Suite** (`npm run test:e2e`): 3 automated user journeys executed against real Chromium:
+  1. *Flow 1*: Header rendering, quick city switcher, and search/filter interactions.
+  2. *Flow 2*: 3-step Add Plant wizard modal with strict private property consent validation.
+  3. *Flow 3*: Festival & Puja Mode checklist interaction and route trip planner.
+
+---
+
 ## 📜 Documentation
 
 - [AGENTS.md](file:///c:/Users/Swapnil/OneDrive/Desktop/Programming/Vriksha/AGENTS.md): Agent working conventions and non-negotiable rules.
@@ -120,3 +146,4 @@ Plants decay according to physical lifespan:
 - [DATA_SOURCES.md](file:///c:/Users/Swapnil/OneDrive/Desktop/Programming/Vriksha/DATA_SOURCES.md): Licensing compliance and external data registry.
 - [DECISIONS.md](file:///c:/Users/Swapnil/OneDrive/Desktop/Programming/Vriksha/DECISIONS.md): Architectural Decision Records (ADRs).
 - [CHANGELOG.md](file:///c:/Users/Swapnil/OneDrive/Desktop/Programming/Vriksha/CHANGELOG.md): Milestone progress log.
+

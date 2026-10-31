@@ -16,10 +16,11 @@ import {
   Flag,
   Camera,
   ExternalLink,
+  QrCode,
+  BookOpen,
 } from 'lucide-react';
 
 import { formatDistance } from '../../lib/formatters';
-
 
 interface PlantDetailSheetProps {
   plant: PlantSearchResult | null;
@@ -28,6 +29,8 @@ interface PlantDetailSheetProps {
   onVerifyStillHere?: (plantId: string) => Promise<void> | void;
   onReportGone?: (plantId: string) => Promise<void> | void;
   onAddPhoto?: (plantId: string) => void;
+  onOpenQrModal?: (plant: PlantSearchResult) => void;
+  onOpenHeritageStory?: (plant: PlantSearchResult) => void;
 }
 
 export const PlantDetailSheet: React.FC<PlantDetailSheetProps> = ({
@@ -37,6 +40,8 @@ export const PlantDetailSheet: React.FC<PlantDetailSheetProps> = ({
   onVerifyStillHere,
   onReportGone,
   onAddPhoto,
+  onOpenQrModal,
+  onOpenHeritageStory,
 }) => {
   const [copiedShare, setCopiedShare] = useState(false);
   const [justVerified, setJustVerified] = useState(false);
@@ -157,11 +162,45 @@ export const PlantDetailSheet: React.FC<PlantDetailSheetProps> = ({
             <button
               onClick={handleShare}
               className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-semibold transition-colors"
+              title="Share plant link"
             >
               {copiedShare ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
               <span>{copiedShare ? 'Copied!' : 'Share'}</span>
             </button>
+
+            {onOpenQrModal && (
+              <button
+                onClick={() => onOpenQrModal(plant)}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-semibold transition-colors"
+                title="Print QR code poster for tree steward"
+                aria-label="Generate printable QR poster"
+              >
+                <QrCode className="w-4 h-4 text-emerald-700" />
+                <span>QR Poster</span>
+              </button>
+            )}
           </div>
+
+          {/* Sacred Heritage Story Banner */}
+          {plant.is_sacred_heritage && (
+            <div
+              onClick={() => onOpenHeritageStory?.(plant)}
+              className="p-3 bg-amber-50 hover:bg-amber-100/80 dark:bg-amber-950/40 rounded-xl border border-amber-300 dark:border-amber-800 flex items-center justify-between cursor-pointer transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-amber-700" />
+                <div>
+                  <div className="text-xs font-bold text-amber-950 dark:text-amber-200">
+                    Sacred &amp; Heritage Tree
+                  </div>
+                  <div className="text-[11px] text-amber-800/80 dark:text-amber-300">
+                    Read folklore, oral history &amp; sacred traditions
+                  </div>
+                </div>
+              </div>
+              <span className="text-xs text-amber-800 font-bold hover:underline">Read Story →</span>
+            </div>
+          )}
 
           {/* Warnings & Protected Status */}
           {plant.is_toxic && <ToxicityAlert details={plant.toxicity_details} />}

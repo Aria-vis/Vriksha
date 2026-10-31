@@ -13,6 +13,11 @@ import { PrivacyPolicyModal } from './components/common/PrivacyPolicyModal';
 import { ModerationDashboard } from './components/moderation/ModerationDashboard';
 import { FestivalCalendar } from './components/festival/FestivalCalendar';
 import { FestivalChecklist } from './components/festival/FestivalChecklist';
+import { CommunityBoard } from './components/board/CommunityBoard';
+import { HeritageStoryModal } from './components/plant/HeritageStoryModal';
+import { NurseryModal } from './components/nursery/NurseryModal';
+import { PlantQrModal } from './components/plant/PlantQrModal';
+import { OpenDataExportModal } from './components/export/OpenDataExportModal';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useFreshnessPrompt } from './hooks/useFreshnessPrompt';
 import { useAuth } from './hooks/useAuth';
@@ -39,6 +44,13 @@ export const App: React.FC = () => {
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
   const [isModerationModalOpen, setIsModerationModalOpen] = useState<boolean>(false);
   const [selectedFestival, setSelectedFestival] = useState<SeedFestivalItem | null>(null);
+
+  // M8 Community & Creative Extra Modal States
+  const [isCommunityBoardOpen, setIsCommunityBoardOpen] = useState<boolean>(false);
+  const [isHeritageStoryOpen, setIsHeritageStoryOpen] = useState<boolean>(false);
+  const [isNurseryOpen, setIsNurseryOpen] = useState<boolean>(false);
+  const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
+  const [qrPlant, setQrPlant] = useState<PlantSearchResult | null>(null);
 
   // Filters state
   const [selectedUseTags, setSelectedUseTags] = useState<UseTag[]>([]);
@@ -207,6 +219,10 @@ export const App: React.FC = () => {
           onSelectPlant={(plant) => setSelectedPlant(plant)}
           onOpenAddModal={() => setIsAddModalOpen(true)}
           activeCityName={activeCityName}
+          onOpenCommunityBoard={() => setIsCommunityBoardOpen(true)}
+          onOpenHeritageStories={() => setIsHeritageStoryOpen(true)}
+          onOpenNurseries={() => setIsNurseryOpen(true)}
+          onOpenExport={() => setIsExportOpen(true)}
         />
 
         {/* 6. Offline status badge */}
@@ -229,6 +245,8 @@ export const App: React.FC = () => {
           onVerifyStillHere={handleVerifyStillHere}
           onReportGone={handleReportGone}
           onAddPhoto={() => setIsAddModalOpen(true)}
+          onOpenQrModal={(p) => setQrPlant(p)}
+          onOpenHeritageStory={() => setIsHeritageStoryOpen(true)}
         />
       )}
 
@@ -269,6 +287,41 @@ export const App: React.FC = () => {
         userLng={coords?.lng || 82.9739}
         onClose={() => setSelectedFestival(null)}
         onSelectPlantOnMap={(plant) => setSelectedPlant(plant)}
+      />
+
+      {/* 13. Community "Need It / Have It" Board */}
+      <CommunityBoard
+        isOpen={isCommunityBoardOpen}
+        onClose={() => setIsCommunityBoardOpen(false)}
+        activeCityName={activeCityName}
+      />
+
+      {/* 14. Sacred & Heritage Tree Stories */}
+      <HeritageStoryModal
+        isOpen={isHeritageStoryOpen}
+        onClose={() => setIsHeritageStoryOpen(false)}
+        plant={selectedPlant}
+      />
+
+      {/* 15. Civic Nurseries & Free Sapling Distribution */}
+      <NurseryModal
+        isOpen={isNurseryOpen}
+        onClose={() => setIsNurseryOpen(false)}
+        activeCityName={activeCityName}
+      />
+
+      {/* 16. Printable Plant QR Poster Modal */}
+      <PlantQrModal
+        isOpen={!!qrPlant}
+        onClose={() => setQrPlant(null)}
+        plant={qrPlant}
+      />
+
+      {/* 17. Open Data Export Modal (GeoJSON / CSV) */}
+      <OpenDataExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        plants={plants}
       />
     </div>
   );

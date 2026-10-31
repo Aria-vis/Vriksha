@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PlantSearchResult, Species } from '../../types/plant';
 import PlantCard from '../plant/PlantCard';
-import { ChevronUp, ChevronDown, Search, X, PlusCircle, Trees } from 'lucide-react';
+import {
+  ChevronUp,
+  ChevronDown,
+  Search,
+  X,
+  PlusCircle,
+  Trees,
+  Mic,
+  Sparkles,
+  BookOpen,
+  Sprout,
+  Download,
+} from 'lucide-react';
+import { useVoiceSearch } from '../../hooks/useVoiceSearch';
 
 interface NearestBottomSheetProps {
   plants: PlantSearchResult[];
@@ -12,6 +26,10 @@ interface NearestBottomSheetProps {
   onSelectPlant: (plant: PlantSearchResult) => void;
   onOpenAddModal: () => void;
   activeCityName: string;
+  onOpenCommunityBoard?: () => void;
+  onOpenHeritageStories?: () => void;
+  onOpenNurseries?: () => void;
+  onOpenExport?: () => void;
 }
 
 export const NearestBottomSheet: React.FC<NearestBottomSheetProps> = ({
@@ -23,9 +41,22 @@ export const NearestBottomSheet: React.FC<NearestBottomSheetProps> = ({
   onSelectPlant,
   onOpenAddModal,
   activeCityName,
+  onOpenCommunityBoard,
+  onOpenHeritageStories,
+  onOpenNurseries,
+  onOpenExport,
 }) => {
+  const { t, i18n } = useTranslation();
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
+  const { isListening, isSupported, startListening } = useVoiceSearch(
+    (text) => {
+      onSearchChange(text);
+      setShowSuggestions(false);
+    },
+    i18n.language === 'hi' ? 'hi' : 'en'
+  );
 
   // Suggestions for autocomplete
   const suggestions = searchQuery.trim().length >= 1
@@ -71,7 +102,7 @@ export const NearestBottomSheet: React.FC<NearestBottomSheetProps> = ({
         </div>
       </div>
 
-      {/* Search Input Bar with Autocomplete */}
+      {/* Search Input Bar with Autocomplete & Voice Search */}
       <div className="px-4 pb-2 relative">
         <div className="relative flex items-center">
           <Search className="w-4 h-4 text-stone-400 absolute left-3 pointer-events-none" />
@@ -83,18 +114,88 @@ export const NearestBottomSheet: React.FC<NearestBottomSheetProps> = ({
               setShowSuggestions(true);
             }}
             onFocus={() => setShowSuggestions(true)}
-            placeholder="Search neem, bael, tulsi, durva, shami..."
-            className="w-full py-2 pl-9 pr-8 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder-stone-500 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-green border-none"
+            placeholder={
+              isListening
+                ? 'Listening... Speak now (Hindi or English)'
+                : t('app.searchPlaceholder', 'Search neem, bael, tulsi, durva, shami...')
+            }
+            className={`w-full py-2 pl-9 pr-16 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder-stone-500 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-green border-none transition-all ${
+              isListening ? 'ring-2 ring-red-500 bg-red-50/40 dark:bg-red-950/30' : ''
+            }`}
           />
-          {searchQuery && (
+
+          <div className="absolute right-2 flex items-center gap-1">
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  onSearchChange('');
+                  setShowSuggestions(false);
+                }}
+                aria-label="Clear search query"
+                className="p-1 text-stone-400 hover:text-stone-700"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+
+            {/* Voice Search Button */}
+            {isSupported && (
+              <button
+                type="button"
+                onClick={startListening}
+                aria-label="Search by voice in Hindi or English"
+                title="Speak to search (Hindi or English)"
+                className={`p-1 rounded-lg transition-colors ${
+                  isListening
+                    ? 'bg-red-600 text-white animate-pulse'
+                    : 'text-stone-400 hover:text-forest-700 hover:bg-stone-200/60 dark:hover:bg-stone-700'
+                }`}
+              >
+                <Mic className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Utility Action Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-1.5 no-scrollbar text-[11px]">
+          {onOpenCommunityBoard && (
             <button
-              onClick={() => {
-                onSearchChange('');
-                setShowSuggestions(false);
-              }}
-              className="absolute right-2.5 p-1 text-stone-400 hover:text-stone-700"
+              onClick={onOpenCommunityBoard}
+              className="flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-900 dark:text-amber-200 border border-amber-200/80 dark:border-amber-900 rounded-full shrink-0 font-medium transition-colors"
             >
-              <X className="w-3.5 h-3.5" />
+              <Sparkles className="w-3 h-3 text-amber-600" />
+              <span>Community Board</span>
+            </button>
+          )}
+
+          {onOpenHeritageStories && (
+            <button
+              onClick={onOpenHeritageStories}
+              className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-900 dark:text-emerald-200 border border-emerald-200/80 dark:border-emerald-900 rounded-full shrink-0 font-medium transition-colors"
+            >
+              <BookOpen className="w-3 h-3 text-emerald-600" />
+              <span>Heritage Lore</span>
+            </button>
+          )}
+
+          {onOpenNurseries && (
+            <button
+              onClick={onOpenNurseries}
+              className="flex items-center gap-1 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 hover:bg-teal-100 text-teal-900 dark:text-teal-200 border border-teal-200/80 dark:border-teal-900 rounded-full shrink-0 font-medium transition-colors"
+            >
+              <Sprout className="w-3 h-3 text-teal-600" />
+              <span>Sapling Banks</span>
+            </button>
+          )}
+
+          {onOpenExport && (
+            <button
+              onClick={onOpenExport}
+              className="flex items-center gap-1 px-2.5 py-1 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 rounded-full shrink-0 font-medium transition-colors"
+            >
+              <Download className="w-3 h-3 text-stone-500" />
+              <span>Export GIS</span>
             </button>
           )}
         </div>
