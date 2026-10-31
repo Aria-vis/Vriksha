@@ -4,6 +4,26 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 5: Festival & Puja Mode + Trip Planner] - 2026-10-31
+
+### Added
+- **Festival Calendar & Strip (`FestivalCalendar.tsx`)**:
+  - Top header strip displaying upcoming Indian occasions with English & Hindi titles, lunar tithi dates, and plant checklist counts.
+  - One-tap launch of ritual checklists for Maha Shivratri, Dussehra, Ganesh Chaturthi, Diwali, Chhath Puja, Tulsi Vivah, etc.
+- **Interactive Ritual Plant Checklist (`FestivalChecklist.tsx`)**:
+  - Live availability detector showing nearest distance for each required ritual plant.
+  - Puja basket checklist tracker allowing users to mark items as collected.
+  - Regional ritual variations disclaimer banner noting that ritual requirements vary by sampradaya and tradition, with moderated community edits enabled.
+- **Traveling Salesperson Route Optimizer (`routePlanner.ts` & `TripPlannerModal.tsx`)**:
+  - Greedy Nearest-Neighbor TSP solver ordering candidate collection points to minimize cumulative travel distance.
+  - Calculates total distance, estimated walking time (~75 m/min), and driving time (~330 m/min).
+  - Single-tap deep link into Google Maps with origin, destination, and all intermediate waypoints prefilled.
+- **Testing & Verification**:
+  - `tests/unit/routePlanner.test.ts`: Proves nearest-neighbor sorting and valid Google Maps multi-stop URL generation.
+  - `tests/components/FestivalChecklist.test.tsx`: Tests rendering of checklist, distance indicators, basket checkbox progress, and modal launcher.
+
+---
+
 ## [Milestone 4: Data Import Pipeline & Attribution UI] - 2026-10-31
 
 ### Added

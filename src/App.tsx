@@ -8,11 +8,14 @@ import ProximityPromptCard from './components/common/ProximityPromptCard';
 import { OfflineBadge } from './components/common/OfflineBadge';
 import { AddPlantModal } from './components/forms/AddPlantModal';
 import { AuthModal } from './components/common/AuthModal';
+import { FestivalCalendar } from './components/festival/FestivalCalendar';
+import { FestivalChecklist } from './components/festival/FestivalChecklist';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useFreshnessPrompt } from './hooks/useFreshnessPrompt';
 import { useAuth } from './hooks/useAuth';
 import { plantsApi } from './services/plantsApi';
 import { PlantSearchResult, Species, UseTag, FreshnessStatus } from './types/plant';
+import type { SeedFestivalItem } from '../scripts/data/festival-data';
 
 export const App: React.FC = () => {
   const {
@@ -29,6 +32,7 @@ export const App: React.FC = () => {
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [selectedFestival, setSelectedFestival] = useState<SeedFestivalItem | null>(null);
 
   // Filters state
   const [selectedUseTags, setSelectedUseTags] = useState<UseTag[]>([]);
@@ -151,7 +155,10 @@ export const App: React.FC = () => {
         isAuthenticated={isAuthenticated}
       />
 
-      {/* 2. Filter Chips Strip */}
+      {/* 2. Upcoming Festivals & Puja Mode Strip */}
+      <FestivalCalendar onSelectFestival={(fest) => setSelectedFestival(fest)} />
+
+      {/* 3. Filter Chips Strip */}
       <FilterChips
         selectedUseTags={selectedUseTags}
         onToggleUseTag={handleToggleUseTag}
@@ -229,6 +236,16 @@ export const App: React.FC = () => {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* 10. Festival & Puja Mode Checklist Drawer */}
+      <FestivalChecklist
+        festival={selectedFestival}
+        nearbyPlants={plants}
+        userLat={coords?.lat || 25.3176}
+        userLng={coords?.lng || 82.9739}
+        onClose={() => setSelectedFestival(null)}
+        onSelectPlantOnMap={(plant) => setSelectedPlant(plant)}
       />
     </div>
   );
