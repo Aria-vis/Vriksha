@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 40% 98%;
+    --foreground: 24 10% 10%;
+
+    --card: 40 30% 99%;
+    --card-foreground: 24 10% 10%;
+
+    --popover: 40 30% 99%;
+    --popover-foreground: 24 10% 10%;
+
+    --primary: 161 48% 21%; /* Forest green #1B4D3E */
+    --primary-foreground: 40 40% 98%;
+
+    --secondary: 28 80% 52%; /* Saffron #E67E22 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 36 20% 92%;
+    --muted-foreground: 24 10% 45%;
+
+    --accent: 16 60% 49%; /* Terracotta #C85A32 */
+    --accent-foreground: 40 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 36 20% 88%;
+    --input: 36 20% 88%;
+    --ring: 161 48% 21%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 160 20% 7%;
+    --foreground: 40 20% 94%;
+
+    --card: 160 20% 10%;
+    --card-foreground: 40 20% 94%;
+
+    --popover: 160 20% 10%;
+    --popover-foreground: 40 20% 94%;
+
+    --primary: 158 64% 52%;
+    --primary-foreground: 160 20% 7%;
+
+    --secondary: 28 80% 52%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 160 15% 18%;
+    --muted-foreground: 40 10% 65%;
+
+    --accent: 16 60% 49%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 160 15% 20%;
+    --input: 160 15% 20%;
+    --ring: 158 64% 52%;
+  }
+}
+
+/* MapLibre custom popup and control overrides */
+.maplibregl-popup-content {
+  padding: 0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(229, 231, 235, 0.8) !important;
+  overflow: hidden;
+}
+
+.maplibregl-popup-close-button {
+  padding: 6px 10px !important;
+  color: #6B7280 !important;
+  font-size: 16px !important;
+  z-index: 10;
+}
+
+/* Hide scrollbar for clean horizontal chips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth mobile touch scrolling */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
