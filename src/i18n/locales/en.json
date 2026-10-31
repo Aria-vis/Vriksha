@@ -1,0 +1,96 @@
+{
+  "app": {
+    "title": "Vriksha",
+    "subtitle": "वृक्ष • Community Flora Map",
+    "tagline": "Find useful trees and plants for puja, festivals, and home remedies near you",
+    "searchPlaceholder": "Search by common name, Hindi, scientific name (e.g. Neem, बेल, Tulsi)...",
+    "searchCity": "Jump to Indian City",
+    "locateMe": "Find Near Me",
+    "offlineNotice": "You are currently offline. Showing cached trees.",
+    "addPlant": "Add a Plant",
+    "privacy": "Privacy & Ethics",
+    "moderation": "Moderation",
+    "language": "Language",
+    "outdoorMode": "Outdoor High Contrast",
+    "loading": "Loading nearby plants..."
+  },
+  "nav": {
+    "map": "Map",
+    "festivals": "Festivals",
+    "saved": "Saved",
+    "profile": "Profile"
+  },
+  "freshness": {
+    "recently_verified": "Recently Verified",
+    "recently_verified_desc": "Verified present within lifespan window",
+    "needs_recheck": "Needs Verification",
+    "needs_recheck_desc": "Verification overdue, may still be present",
+    "possibly_gone": "Possibly Gone",
+    "possibly_gone_desc": "Long unverified or negative report received",
+    "reported_gone": "Reported Gone",
+    "verifyStillHere": "Still here",
+    "reportGone": "Report gone",
+    "proximityPromptTitle": "Are you near this plant?",
+    "proximityPromptDesc": "You are within 100m. Please confirm if it is still physically here.",
+    "verifiedBy": "Verified by community member"
+  },
+  "filters": {
+    "all": "All Plants",
+    "puja": "Puja & Rituals",
+    "ayurveda": "Ayurveda & Remedy",
+    "festival": "Festivals",
+    "culinary": "Culinary / Kitchen",
+    "shade": "Shade & Heritage",
+    "verifiedOnly": "Recently Verified Only"
+  },
+  "festivals": {
+    "upcomingOccasions": "Upcoming Occasions & Festivals",
+    "planTrip": "Plan Collection Trip",
+    "viewChecklist": "Puja Checklist",
+    "itemsCollected": "items collected",
+    "allCollected": "All puja items in basket!",
+    "travelEstimates": "Travel Estimates",
+    "walking": "Walking",
+    "driving": "Driving",
+    "openGoogleMaps": "Open Full Itinerary in Google Maps",
+    "regionalDisclaimer": "Ritual requirements vary by region and sampradaya. Moderate edits enabled."
+  },
+  "plant": {
+    "distance": "away",
+    "directions": "Get Directions",
+    "partsUsed": "Parts Used",
+    "seasonality": "12-Month Seasonality",
+    "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr", "may": "May", "jun": "Jun",
+    "jul": "Jul", "aug": "Aug", "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec",
+    "flowering": "Flowering",
+    "fruiting": "Fruiting",
+    "leafing": "Leafing",
+    "dormant": "Dormant",
+    "medicalDisclaimer": "Traditional use. Not medical advice.",
+    "toxicityWarning": "Caution: Toxic parts. Handle with care.",
+    "dataSource": "Data Source",
+    "license": "License",
+    "contributor": "Added by"
+  },
+  "add": {
+    "wizardTitle": "Map a Tree or Useful Plant",
+    "stepPhoto": "1. Photo",
+    "stepSpecies": "2. Identify",
+    "stepLocation": "3. Location",
+    "stepConsent": "4. Ethics & Submit",
+    "takePhoto": "Take or Upload Photo",
+    "compressing": "Optimizing image (<120 KB)...",
+    "privatePropertyLabel": "Is this plant on private property?",
+    "ownerConsentLabel": "I confirm the property owner has permitted sharing this location for community puja/remedy foraging.",
+    "submit": "Submit Plant to Community Map",
+    "successTitle": "Dhanyavaad! Plant Added",
+    "successDesc": "Your contribution is live and earned you +10 Contributor Points!"
+  },
+  "privacy": {
+    "modalTitle": "Privacy, Protection & Harvesting Ethics",
+    "restrictedShieldTitle": "5 km Coordinate Shield for Sensitive Species",
+    "zeroTrackingTitle": "Zero Contributor Location Tracking",
+    "landownerConsentTitle": "Private Property & Landowner Approval",
+    "harvestingEtiquetteTitle": "Sacred Harvesting Etiquette"
+  }
+}

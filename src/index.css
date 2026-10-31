@@ -95,3 +95,27 @@
 .touch-scroll {
   -webkit-overflow-scrolling: touch;
 }
+
+/* Outdoor High-Contrast Mode for bright sunlight readability */
+.high-contrast {
+  filter: contrast(115%);
+}
+.high-contrast body {
+  color: #000000 !important;
+}
+.high-contrast button {
+  border-width: 2px !important;
+  font-weight: 700 !important;
+}
+.high-contrast .bg-brand-green {
+  background-color: #0d2820 !important;
+}
+.high-contrast .bg-white {
+  background-color: #ffffff !important;
+  border-color: #000000 !important;
+}
+.high-contrast .text-stone-500,
+.high-contrast .text-stone-600 {
+  color: #1a1a1a !important;
+  font-weight: 500 !important;
+}

@@ -1,6 +1,19 @@
-import React, { useState } from 'react';
-import { Trees, Compass, Plus, ChevronDown, MapPin, Check, ShieldCheck, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  Trees,
+  Compass,
+  Plus,
+  ChevronDown,
+  MapPin,
+  Check,
+  ShieldCheck,
+  ShieldAlert,
+  Languages,
+  SunMedium,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { INDIAN_CITY_PRESETS } from '../../hooks/useGeolocation';
+import { SUPPORTED_LANGUAGES, setLanguage, LanguageOption } from '../../i18n';
 
 interface HeaderProps {
   activeCityName: string;
@@ -31,7 +44,29 @@ export const Header: React.FC<HeaderProps> = ({
   isAuthenticated = false,
   isModerator = false,
 }) => {
+  const { t, i18n } = useTranslation();
   const [showCityMenu, setShowCityMenu] = useState<boolean>(false);
+  const [showLangMenu, setShowLangMenu] = useState<boolean>(false);
+  const [isOutdoorMode, setIsOutdoorMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('vriksha_outdoor_mode') === 'true';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (isOutdoorMode) {
+        document.documentElement.classList.add('high-contrast');
+      } else {
+        document.documentElement.classList.remove('high-contrast');
+      }
+      localStorage.setItem('vriksha_outdoor_mode', String(isOutdoorMode));
+    }
+  }, [isOutdoorMode]);
+
+  const fallbackLang: LanguageOption = { code: 'en', name: 'English', nativeName: 'English', script: 'Latin' };
+  const currentLang: LanguageOption = SUPPORTED_LANGUAGES.find((l) => l.code === i18n.language) ?? fallbackLang;
 
   return (
     <header className="h-14 sm:h-16 px-3 sm:px-4 bg-brand-green text-white flex items-center justify-between shadow-md z-30 shrink-0 select-none">
@@ -103,17 +138,89 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           </div>
-          <p className="text-[10px] text-emerald-200 hidden sm:block">Community Map of Useful Plants & Trees</p>
+          <p className="text-[10px] text-emerald-200 hidden sm:block">
+            {t('app.subtitle', 'Community Flora Map')}
+          </p>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1.5 sm:space-x-2">
+        {/* Language Selector Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowLangMenu(!showLangMenu);
+              setShowCityMenu(false);
+            }}
+            className="flex items-center gap-1 px-2 py-1 bg-emerald-900/60 hover:bg-emerald-800 text-white rounded-full text-xs font-medium border border-emerald-700/60 transition-colors"
+            title="Change Display Language"
+            aria-label="Change Display Language"
+            aria-expanded={showLangMenu}
+            aria-haspopup="listbox"
+          >
+            <Languages className="w-3.5 h-3.5 text-brand-saffron" />
+            <span className="text-[11px] font-bold">{currentLang.code.toUpperCase()}</span>
+            <ChevronDown className="w-3 h-3 text-emerald-300" />
+          </button>
+
+          {showLangMenu && (
+            <div
+              role="listbox"
+              className="absolute top-full right-0 mt-1.5 w-48 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-100 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-800 py-1.5 z-50 max-h-72 overflow-y-auto divide-y divide-stone-100 dark:divide-stone-800"
+            >
+              <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-stone-400">
+                Select Indian Language
+              </div>
+              <div className="py-1">
+                {SUPPORTED_LANGUAGES.map((lang) => {
+                  const isSelected = i18n.language === lang.code;
+                  return (
+                    <button
+                      key={lang.code}
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        setLanguage(lang.code);
+                        setShowLangMenu(false);
+                      }}
+                      className={`w-full px-3 py-1.5 text-left text-xs flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors ${
+                        isSelected ? 'font-bold text-brand-green dark:text-emerald-400' : ''
+                      }`}
+                    >
+                      <div>
+                        <span className="font-medium">{lang.nativeName}</span>
+                        <span className="text-[10px] text-stone-400 ml-1.5">({lang.name})</span>
+                      </div>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Outdoor High Contrast Toggle */}
+        <button
+          onClick={() => setIsOutdoorMode(!isOutdoorMode)}
+          className={`p-1.5 rounded-full border transition-colors ${
+            isOutdoorMode
+              ? 'bg-amber-400 text-stone-950 border-amber-300 shadow-sm'
+              : 'bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border-emerald-700/60'
+          }`}
+          title={isOutdoorMode ? 'Outdoor high-contrast enabled' : 'Toggle Outdoor High-Contrast Mode for bright sunlight'}
+          aria-label="Toggle Outdoor High-Contrast Mode"
+        >
+          <SunMedium className="w-4 h-4" />
+        </button>
+
         {/* User Points / Auth Trigger */}
         <button
           onClick={onOpenAuthModal}
           className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-900/80 hover:bg-emerald-800/90 text-white rounded-full text-xs font-semibold border border-emerald-700/60 transition-colors"
           title={isAuthenticated ? 'Contributor Profile' : 'Sign in to sync points'}
+          aria-label="Contributor profile and points"
         >
           <span className="text-amber-300">🌿</span>
           <span className="font-mono">{userPoints} pts</span>
@@ -129,6 +236,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'bg-emerald-900/60 hover:bg-emerald-800 border-emerald-700/60 text-white'
           }`}
           title="Locate me via GPS"
+          aria-label="Locate me using GPS"
         >
           <Compass className={`w-3.5 h-3.5 text-brand-saffron ${isLocating ? 'animate-spin' : ''}`} />
           <span className="hidden md:inline">{isLocating ? 'Locating...' : 'Near Me'}</span>
@@ -150,6 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenModerationModal}
             className="flex items-center gap-1 px-2.5 py-1.5 bg-purple-900/80 hover:bg-purple-800 text-purple-200 rounded-full text-xs font-semibold border border-purple-600 transition-colors"
             title="Open Community Moderation Dashboard"
+            aria-label="Moderation dashboard"
           >
             <ShieldAlert className="w-3.5 h-3.5 text-amber-300" />
             <span className="hidden sm:inline">Mod</span>
@@ -160,9 +269,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onOpenAddModal}
           className="flex items-center gap-1 px-3 py-1.5 bg-brand-saffron hover:bg-brand-saffron-light active:scale-95 text-white text-xs font-bold rounded-full shadow-md transition-all"
+          aria-label="Add a plant"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>Add Plant</span>
+          <span>{t('app.addPlant', 'Add Plant')}</span>
         </button>
       </div>
     </header>

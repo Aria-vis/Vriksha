@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '../../src/i18n';
 import { AddPlantModal } from '../../src/components/forms/AddPlantModal';
 import { AuthProvider } from '../../src/context/AuthContext';
 

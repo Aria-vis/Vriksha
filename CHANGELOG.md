@@ -4,6 +4,29 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 7: Internationalization, PWA & Outdoor Visibility Pass] - 2026-10-31
+
+### Added
+- **Multi-Language Architecture (`src/i18n`)**:
+  - Full translations for English (`en`) and Hindi (`hi`).
+  - Native script translation stubs for 9 regional Indian languages: Bengali (`bn`), Tamil (`ta`), Telugu (`te`), Marathi (`mr`), Gujarati (`gu`), Kannada (`kn`), Malayalam (`ml`), Punjabi (`pa`), and Odia (`or`).
+  - Seamless fallback mechanism preserving UI completeness when a localized string is missing in regional stubs.
+  - Persistent language selection saved across sessions in `localStorage` (`vriksha_language`).
+- **Interactive Language Switcher (`Header.tsx`)**:
+  - Compact header dropdown showing native script names (हिन्दी, தமிழ், తెలుగు, বাংলা, etc.) with active language indicator.
+- **Outdoor High-Contrast Glare Mode**:
+  - High-contrast toggle in header (`SunMedium`) designed specifically for outdoor foragers under harsh Indian sunlight.
+  - Elevates borders, contrast ratios, and font weights to meet WCAG AAA standards on outdoor mobile screens.
+- **Accessibility Enhancements**:
+  - Full keyboard accessibility and screen-reader `aria-label`, `aria-expanded`, and `role="listbox"` / `role="button"` tags across header controls, filter chips, and plant cards.
+- **PWA Workbox Caching (`vite.config.ts`)**:
+  - Automatic caching for Carto Voyager & OpenStreetMap raster tiles (max 1000 entries, 30 days) with `CacheFirst` strategy.
+  - Offline app shell pre-caching 11 core bundles, SVGs, and manifests via `generateSW`.
+- **Testing & Verification**:
+  - `tests/unit/i18n.test.ts`: 5 tests verifying 11-language catalog, English and Hindi translation parity, regional fallback, and `localStorage` persistence.
+
+---
+
 ## [Milestone 6: Moderation Dashboard & Privacy Protection] - 2026-10-31
 
 ### Added

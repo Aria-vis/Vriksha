@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '../../src/i18n';
 import { FestivalChecklist } from '../../src/components/festival/FestivalChecklist';
 import { SeedFestivalItem } from '../../scripts/data/festival-data';
 import { PlantSearchResult } from '../../src/types/plant';

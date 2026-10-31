@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Header from './components/common/Header';
 import FilterChips from './components/map/FilterChips';
 import MapContainer from './components/map/MapContainer';
@@ -20,6 +21,7 @@ import { PlantSearchResult, Species, UseTag, FreshnessStatus } from './types/pla
 import type { SeedFestivalItem } from '../scripts/data/festival-data';
 
 export const App: React.FC = () => {
+  const { t } = useTranslation();
   const {
     coords,
     activeCityName,
@@ -213,7 +215,7 @@ export const App: React.FC = () => {
         {/* Loading indicator */}
         {isLoading && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1 bg-white/90 dark:bg-stone-900/90 text-stone-700 dark:text-stone-300 text-xs font-semibold rounded-full shadow border border-stone-200 dark:border-stone-800 animate-pulse">
-            Searching nearby flora...
+            {t('app.loading', 'Loading nearby plants...')}
           </div>
         )}
       </main>

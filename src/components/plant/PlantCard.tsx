@@ -1,3 +1,5 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { PlantSearchResult } from '../../types/plant';
 import FreshnessBadge from './FreshnessBadge';
 import { formatDistance } from '../../lib/formatters';
@@ -10,16 +12,30 @@ interface PlantCardProps {
   className?: string;
 }
 
-
 export const PlantCard: React.FC<PlantCardProps> = ({
   plant,
   isSelected = false,
   onSelect,
   className = '',
 }) => {
+  const { i18n } = useTranslation();
+  const isHi = i18n.language === 'hi';
+
+  const primaryName = isHi ? plant.common_name_hi : plant.common_name_en;
+  const secondaryName = isHi ? plant.common_name_en : plant.common_name_hi;
+
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${primaryName} (${secondaryName}), ${plant.scientific_name}, ${formatDistance(plant.distance_meters)} away`}
       onClick={() => onSelect?.(plant)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect?.(plant);
+        }
+      }}
       className={`p-3.5 bg-white dark:bg-stone-900 rounded-2xl border transition-all cursor-pointer shadow-sm hover:shadow-md ${
         isSelected
           ? 'border-brand-saffron ring-2 ring-brand-saffron/20 bg-amber-50/20'
@@ -66,9 +82,9 @@ export const PlantCard: React.FC<PlantCardProps> = ({
           <div>
             <div className="flex items-start justify-between gap-1">
               <h3 className="font-bold text-stone-900 dark:text-stone-100 text-sm leading-tight truncate">
-                <span>{plant.common_name_en}</span>
+                <span>{primaryName}</span>
                 <span className="text-brand-saffron font-medium ml-1.5 text-xs">
-                  ({plant.common_name_hi})
+                  ({secondaryName})
                 </span>
               </h3>
               

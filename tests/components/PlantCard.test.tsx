@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-
+import '../../src/i18n';
 import PlantCard from '../../src/components/plant/PlantCard';
 import { formatDistance } from '../../src/lib/formatters';
 import { PlantSearchResult } from '../../src/types/plant';

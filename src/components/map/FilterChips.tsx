@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UseTag, FreshnessStatus } from '../../types/plant';
 import { Sparkles, Flower2, Apple, Umbrella, Sun, HeartPulse, CheckCircle2 } from 'lucide-react';
 
@@ -30,6 +31,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   onToggleFreshness,
   onClearAll,
 }) => {
+  const { i18n } = useTranslation();
+  const isHi = i18n.language === 'hi';
   const chips: ChipItem[] = [
     {
       id: 'in-season',
@@ -127,8 +130,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           }`}
         >
           {chip.icon}
-          <span>{chip.label}</span>
-          <span className="text-[10px] opacity-75 hidden sm:inline">({chip.labelHi})</span>
+          <span>{isHi ? chip.labelHi : chip.label}</span>
+          <span className="text-[10px] opacity-75 hidden sm:inline">
+            ({isHi ? chip.label : chip.labelHi})
+          </span>
         </button>
       ))}
     </div>
