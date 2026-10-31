@@ -1,55 +1,198 @@
-import React from 'react';
-import { Trees, Compass, Sparkles, MapPin } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Header from './components/common/Header';
+import FilterChips from './components/map/FilterChips';
+import MapContainer from './components/map/MapContainer';
+import NearestBottomSheet from './components/map/NearestBottomSheet';
+import PlantDetailSheet from './components/plant/PlantDetailSheet';
+import ProximityPromptCard from './components/common/ProximityPromptCard';
+import { useGeolocation } from './hooks/useGeolocation';
+import { useFreshnessPrompt } from './hooks/useFreshnessPrompt';
+import { fetchNearestPlants, fetchAllSpecies } from './services/plantsApi';
+import { PlantSearchResult, Species, UseTag, FreshnessStatus } from './types/plant';
 
 export const App: React.FC = () => {
+  const {
+    coords,
+    activeCityName,
+    isUsingGPS,
+    isLocating,
+    requestGPSLocation,
+    selectCityPreset,
+  } = useGeolocation();
+
+  // Filters state
+  const [selectedUseTags, setSelectedUseTags] = useState<UseTag[]>([]);
+  const [inSeasonOnly, setInSeasonOnly] = useState<boolean>(false);
+  const [selectedFreshness, setSelectedFreshness] = useState<FreshnessStatus[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Domain data state
+  const [plants, setPlants] = useState<PlantSearchResult[]>([]);
+  const [allSpecies, setAllSpecies] = useState<Species[]>([]);
+  const [selectedPlant, setSelectedPlant] = useState<PlantSearchResult | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Load master species catalog
+  useEffect(() => {
+    fetchAllSpecies().then((species) => {
+      setAllSpecies(species);
+    });
+  }, []);
+
+  // Fetch nearest plants whenever coords or filters change
+  const loadPlants = useCallback(async () => {
+    if (!coords) return;
+    setIsLoading(true);
+    try {
+      const results = await fetchNearestPlants(coords.lat, coords.lng, {
+        query: searchQuery,
+        use_tags: selectedUseTags,
+        in_season_only: inSeasonOnly,
+        freshness_statuses: selectedFreshness,
+      });
+      setPlants(results);
+    } catch (err) {
+      console.error('Failed to load nearest plants:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [coords, searchQuery, selectedUseTags, inSeasonOnly, selectedFreshness]);
+
+  useEffect(() => {
+    loadPlants();
+  }, [loadPlants]);
+
+  // Proximity 100m Recheck Prompt hook
+  const { promptPlant, dismissPrompt } = useFreshnessPrompt(coords, plants, isUsingGPS);
+
+  // Selected plant's full species record (for local names & seasonality)
+  const selectedPlantSpecies = useMemo(() => {
+    if (!selectedPlant) return null;
+    return allSpecies.find((s) => s.scientific_name === selectedPlant.scientific_name) || null;
+  }, [selectedPlant, allSpecies]);
+
+  // Filter toggles
+  const handleToggleUseTag = (tag: UseTag) => {
+    setSelectedUseTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleToggleFreshness = (status: FreshnessStatus) => {
+    setSelectedFreshness((prev) =>
+      prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
+    );
+  };
+
+  const handleClearFilters = () => {
+    setSelectedUseTags([]);
+    setInSeasonOnly(false);
+    setSelectedFreshness([]);
+    setSearchQuery('');
+  };
+
+  // Handlers for "Still Here" / "Report Gone"
+  const handleVerifyStillHere = async (plantId: string) => {
+    setPlants((prev) =>
+      prev.map((p) =>
+        p.id === plantId
+          ? {
+              ...p,
+              status: 'recently_verified',
+              last_verified_at: new Date().toISOString(),
+              verification_count: p.verification_count + 1,
+            }
+          : p
+      )
+    );
+  };
+
+  const handleReportGone = async (plantId: string) => {
+    // If reporting gone, remove from view or mark as gone
+    setPlants((prev) => prev.filter((p) => p.id !== plantId));
+    if (selectedPlant?.id === plantId) {
+      setSelectedPlant(null);
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    // Scaffolded for M3
+    alert('Plant submission wizard will open here (Milestone 3)!');
+  };
+
   return (
-    <div className="flex flex-col h-full w-full bg-brand-cream text-stone-900">
-      {/* Header */}
-      <header className="h-16 px-4 bg-brand-green text-white flex items-center justify-between shadow-md z-20">
-        <div className="flex items-center space-x-2.5">
-          <div className="p-2 bg-emerald-600 rounded-lg text-white shadow-inner">
-            <Trees className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold font-sans tracking-tight leading-tight flex items-center gap-1.5">
-              <span>Vriksha</span>
-              <span className="text-brand-saffron text-base font-normal">(वृक्ष)</span>
-            </h1>
-            <p className="text-xs text-emerald-200">Community Map of Useful Plants</p>
-          </div>
-        </div>
+    <div className="flex flex-col h-full w-full bg-brand-cream text-stone-900 overflow-hidden">
+      {/* 1. App Header */}
+      <Header
+        activeCityName={activeCityName}
+        isUsingGPS={isUsingGPS}
+        onSelectCityPreset={selectCityPreset}
+        onRequestGPS={requestGPSLocation}
+        isLocating={isLocating}
+        onOpenAddModal={handleOpenAddModal}
+      />
 
-        <div className="flex items-center space-x-3">
-          <button
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-saffron hover:bg-brand-saffron-light text-white text-xs font-semibold rounded-full shadow transition-colors"
-            title="Locate nearest puja & medicinal plants"
-          >
-            <Compass className="w-4 h-4" />
-            <span className="hidden sm:inline">Near Me</span>
-          </button>
-        </div>
-      </header>
+      {/* 2. Filter Chips Strip */}
+      <FilterChips
+        selectedUseTags={selectedUseTags}
+        onToggleUseTag={handleToggleUseTag}
+        inSeasonOnly={inSeasonOnly}
+        onToggleInSeason={() => setInSeasonOnly(!inSeasonOnly)}
+        selectedFreshness={selectedFreshness}
+        onToggleFreshness={handleToggleFreshness}
+        onClearAll={handleClearFilters}
+      />
 
-      {/* Main Content Area */}
-      <main className="flex-1 relative flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md p-6 bg-white rounded-2xl shadow-xl border border-stone-100 flex flex-col items-center">
-          <div className="w-16 h-16 bg-emerald-50 text-brand-green rounded-full flex items-center justify-center mb-4">
-            <MapPin className="w-8 h-8 text-emerald-700 animate-bounce" />
-          </div>
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Google Maps for Trees & Plants</h2>
-          <p className="text-stone-600 text-sm mb-6 leading-relaxed">
-            Find the nearest Neem, Bael, Tulsi, Shami, Peepal, or Durva grass for everyday home remedies, pujas, and festivals across India.
-          </p>
+      {/* 3. Main Interactive Map Area */}
+      <main className="flex-1 relative w-full overflow-hidden">
+        <MapContainer
+          plants={plants}
+          centerCoords={coords}
+          selectedPlant={selectedPlant}
+          onSelectPlant={(plant) => setSelectedPlant(plant)}
+          onRequestGPS={requestGPSLocation}
+          isLocating={isLocating}
+        />
 
-          <div className="w-full bg-emerald-50/70 border border-emerald-200/60 rounded-xl p-3 text-left mb-4 text-xs text-emerald-900 space-y-1">
-            <div className="font-semibold flex items-center gap-1.5 text-emerald-800">
-              <Sparkles className="w-3.5 h-3.5 text-brand-saffron" />
-              <span>Milestone 0: Scaffold Initialized</span>
-            </div>
-            <p className="text-emerald-700">TypeScript strict, Tailwind CSS, Vitest, and PostGIS architecture configured.</p>
+        {/* 4. 100m Proximity Recheck Prompt */}
+        <ProximityPromptCard
+          plant={promptPlant}
+          onConfirmStillHere={handleVerifyStillHere}
+          onReportGone={handleReportGone}
+          onDismiss={dismissPrompt}
+        />
+
+        {/* 5. Nearest First Bottom Sheet */}
+        <NearestBottomSheet
+          plants={plants}
+          allSpecies={allSpecies}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedPlant={selectedPlant}
+          onSelectPlant={(plant) => setSelectedPlant(plant)}
+          onOpenAddModal={handleOpenAddModal}
+          activeCityName={activeCityName}
+        />
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1 bg-white/90 dark:bg-stone-900/90 text-stone-700 dark:text-stone-300 text-xs font-semibold rounded-full shadow border border-stone-200 dark:border-stone-800 animate-pulse">
+            Searching nearby flora...
           </div>
-        </div>
+        )}
       </main>
+
+      {/* 6. Plant Detail Full Sheet Modal */}
+      {selectedPlant && (
+        <PlantDetailSheet
+          plant={selectedPlant}
+          speciesDetails={selectedPlantSpecies}
+          onClose={() => setSelectedPlant(null)}
+          onVerifyStillHere={handleVerifyStillHere}
+          onReportGone={handleReportGone}
+          onAddPhoto={() => alert('Photo upload with client compression will open here (Milestone 3)!')}
+        />
+      )}
     </div>
   );
 };

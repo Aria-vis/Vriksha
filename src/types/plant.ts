@@ -73,4 +73,6 @@ export interface PlantFilters {
   land_types?: LandType[];
   in_season_only?: boolean;
   radius_meters?: number;
+  radiusMeters?: number;
 }
+

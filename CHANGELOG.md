@@ -4,6 +4,31 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 2: Map, Search, Filters, Detail & Freshness Badges] - 2026-10-31
+
+### Added
+- **Interactive Map Experience**:
+  - MapLibre GL JS integration with Carto Voyager open raster tiles (no paid API keys required).
+  - Geolocation detection with fallback to 7 major Indian cities (Varanasi, Patna, Delhi, Bengaluru, Mumbai, Kolkata, Chennai).
+  - Freshness-colored markers with pulse indicators and active selection state.
+- **Search & Filter Suite**:
+  - Real-time search by English name, Hindi name, scientific botanical name, and use-case tags.
+  - Horizontal filter chips: Puja, Medicinal, Fruit, Shade, Flowers, Edible, In season now, and Recently verified.
+- **Mobile-First Nearest Bottom Sheet**:
+  - Pull-to-expand drawer with nearest-first sorted plant cards.
+  - Quick distance formatting (`120 m`, `2.4 km`) and relative time stamps (`verified 2 weeks ago`).
+- **Comprehensive Plant Detail Sheet**:
+  - Seasonality strip showing 12-month flowering, fruiting, and leaf cycle with live "In Season Now" badge.
+  - Direct navigation link to Google Maps driving/walking directions.
+  - Freshness actions: "Still here" verification and "It's gone" negative reporting.
+  - Regional vernacular names in 10 Indian languages.
+  - Harvesting etiquette banner, toxicity warnings (e.g. Dhatura/Kaner/Aak), medical disclaimers, and restricted species shield.
+- **Proximity Verification Prompt**:
+  - Automatic prompt ("Is this plant still here?") displayed when within 100 meters of a `needs_recheck` plant, capped to once every 24 hours.
+- **Client Testing**:
+  - Component tests for `PlantCard` and `SeasonalityStrip`.
+  - Integration tests for `plantsApi` with offline mock database fallback.
+
 ---
 
 ## [Milestone 1: Database Schema, PostGIS RPCs, RLS & Species Seed] - 2026-10-31
