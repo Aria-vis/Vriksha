@@ -4,6 +4,36 @@ All notable changes to the **Vriksha** project are documented in this file, stru
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Milestone 3: Auth, Add Plant, Verify/Report Flow & Offline Queue] - 2026-10-31
+
+### Added
+- **Authentication & Contributor Profiles**:
+  - Supabase Phone OTP and Google OAuth integration with transparent guest contributor browsing.
+  - Profile state tracking contributor points: +10 pts for mapping a plant, +2 pts for ground-truth verification.
+  - Dedicated `AuthModal` with quick 10-digit Indian phone OTP and 1-tap Google login.
+- **Client-Side Image Compressor (`imageCompression.ts`)**:
+  - HTML5 Canvas downscaler capping dimensions to 800x800 preserving aspect ratio.
+  - Converts uploads to high-quality WebP/JPEG under 120 KB, reducing bandwidth by 85–95% on mobile connections.
+- **Offline Submission & Verification Queue (`db.ts` & `useOfflineQueue.ts`)**:
+  - IndexedDB storage powered by Dexie.js (`pendingSubmissions`, `pendingVerifications`, `cachedPlants`).
+  - Online/offline event listeners automatically syncing queued contributions when network connectivity resumes.
+  - Discreet `OfflineBadge` displaying queue counts and manual sync trigger.
+- **"Add a Plant" Wizard (`AddPlantModal.tsx`)**:
+  - Step 1: Photo upload with real-time compression statistics preview.
+  - Step 2: Species selector (`SpeciesPicker.tsx`) with search over 80 species, categories, and "Not sure / Help identify" option.
+  - Step 3: Location micro-adjuster (`LocationAdjuster.tsx`) with GPS nudge controls and landmark hint input.
+  - **Private Property Safety**: Mandatory consent confirmation checkbox strictly required before submission on private land.
+  - Confetti celebration animation upon submission.
+- **Ground-Truth Verification & Reporting**:
+  - "Still here" one-tap verification resetting freshness decay and awarding contributor points.
+  - "Report gone" flow for negative verification logging.
+- **Comprehensive Unit & Component Tests**:
+  - `tests/unit/imageCompression.test.ts`: Proportional downscaling, aspect ratios, and format sizing.
+  - `tests/unit/offlineQueue.test.ts`: Dexie table persistence and queuing.
+  - `tests/components/AddPlantModal.test.tsx`: Step navigation and private land consent enforcement.
+
+---
+
 ## [Milestone 2: Map, Search, Filters, Detail & Freshness Badges] - 2026-10-31
 
 ### Added

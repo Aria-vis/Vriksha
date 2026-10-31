@@ -76,3 +76,17 @@ export interface PlantFilters {
   radiusMeters?: number;
 }
 
+export type PlantItem = PlantSearchResult;
+
+export interface UserProfile {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url?: string | null;
+  role: 'user' | 'moderator' | 'admin';
+  points: number;
+  bio?: string | null;
+  created_at: string;
+}
+
+

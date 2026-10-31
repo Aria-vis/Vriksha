@@ -197,3 +197,231 @@ export async function fetchAllSpecies(): Promise<Species[]> {
   const db = await loadMockDb();
   return db?.species ?? [];
 }
+
+export interface AddPlantInput {
+  species_id?: string;
+  lat: number;
+  lng: number;
+  land_type: 'public' | 'temple' | 'institution' | 'private';
+  address_hint?: string;
+  notes?: string;
+  private_owner_consent?: boolean;
+  photo_data_url?: string;
+}
+
+/**
+ * Adds a new plant submission to Supabase or the local mock database.
+ */
+export async function addPlant(input: AddPlantInput): Promise<PlantSearchResult> {
+  const db = await loadMockDb();
+  const speciesList = db?.species ?? [];
+  const fallbackSpecies: Species = speciesList[0] || {
+    id: '00000000-0000-0000-0000-000000000001',
+    scientific_name: 'Azadirachta indica',
+    common_name_en: 'Neem',
+    common_name_hi: 'नीम',
+    plant_type: 'large_tree',
+    use_tags: ['puja', 'medicinal', 'shade'],
+    parts_used: ['leaves', 'twigs', 'bark'],
+    is_toxic: false,
+    toxicity_details: null,
+    is_restricted: false,
+    conservation_status: 'least_concern',
+    harvesting_etiquette: null,
+    needs_review: false,
+    seasonality_flowering: [3, 4, 5],
+    seasonality_fruiting: [5, 6, 7],
+    seasonality_fresh_leaves: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  };
+
+  const matchedSpecies = (input.species_id ? speciesList.find((s) => s.id === input.species_id) : undefined) || fallbackSpecies;
+
+  // In production Supabase
+  if (!isMockClient) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase.from('plants') as any)
+        .insert({
+          species_id: matchedSpecies.id,
+          location: `POINT(${input.lng} ${input.lat})`,
+          land_type: input.land_type,
+          address_hint: input.address_hint || null,
+          private_owner_consent: input.land_type === 'private' ? (input.private_owner_consent ?? false) : false,
+          notes: input.notes || null,
+          source: 'community',
+          attribution: 'Community Contributor',
+          license: 'CC BY-SA 4.0',
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          species_id: matchedSpecies.id,
+          scientific_name: matchedSpecies.scientific_name,
+          common_name_en: matchedSpecies.common_name_en,
+          common_name_hi: matchedSpecies.common_name_hi,
+          plant_type: matchedSpecies.plant_type,
+          use_tags: matchedSpecies.use_tags,
+          parts_used: matchedSpecies.parts_used,
+          is_toxic: matchedSpecies.is_toxic,
+          toxicity_details: matchedSpecies.toxicity_details,
+          lat: input.lat,
+          lng: input.lng,
+          distance_meters: 0,
+          address_hint: input.address_hint || null,
+          land_type: input.land_type,
+          status: 'recently_verified',
+          last_verified_at: new Date().toISOString(),
+          verification_count: 1,
+          is_sacred_heritage: false,
+          heritage_story: null,
+          is_restricted: matchedSpecies.is_restricted,
+          primary_photo_url: input.photo_data_url || null,
+          source: 'community',
+          attribution: 'Community Contributor',
+          license: 'CC BY-SA 4.0',
+        };
+      }
+    } catch (e) {
+      console.warn('Supabase insert failed, applying to local store:', e);
+    }
+  }
+
+  // Local/Offline fallback:
+  const newPlantId = `pl-usr-${Date.now()}`;
+  const fuzzedLat = Math.round(input.lat * 20) / 20;
+  const fuzzedLng = Math.round(input.lng * 20) / 20;
+
+  const newSeedPlant: SeedPlantItem = {
+    id: newPlantId,
+    species_scientific_name: matchedSpecies.scientific_name,
+    cityName: 'Varanasi',
+    lat: input.lat,
+    lng: input.lng,
+    fuzzed_lat: fuzzedLat,
+    fuzzed_lng: fuzzedLng,
+    land_type: input.land_type,
+    private_owner_consent: input.land_type === 'private' ? (input.private_owner_consent ?? false) : false,
+    notes: input.notes || '',
+    address_hint: input.address_hint || 'Community added plant',
+    last_verified_at: new Date().toISOString(),
+    status: 'recently_verified',
+    primary_photo_url: input.photo_data_url || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=600&auto=format&fit=crop',
+    source: 'community',
+    attribution: 'Community Contributor',
+    license: 'CC BY-SA 4.0',
+    is_sacred_heritage: false,
+    heritage_story: undefined,
+  };
+
+  if (db) {
+    db.plants.unshift(newSeedPlant);
+  }
+
+  return {
+    id: newPlantId,
+    species_id: matchedSpecies.id,
+    scientific_name: matchedSpecies.scientific_name,
+    common_name_en: matchedSpecies.common_name_en,
+    common_name_hi: matchedSpecies.common_name_hi,
+    plant_type: matchedSpecies.plant_type,
+    use_tags: matchedSpecies.use_tags,
+    parts_used: matchedSpecies.parts_used,
+    is_toxic: matchedSpecies.is_toxic,
+    toxicity_details: matchedSpecies.toxicity_details,
+    lat: input.lat,
+    lng: input.lng,
+    distance_meters: 0,
+    address_hint: input.address_hint || null,
+    land_type: input.land_type,
+    status: 'recently_verified',
+    last_verified_at: new Date().toISOString(),
+    verification_count: 1,
+    is_sacred_heritage: false,
+    heritage_story: null,
+    is_restricted: matchedSpecies.is_restricted,
+    primary_photo_url: newSeedPlant.primary_photo_url || null,
+    source: 'community',
+    attribution: 'Community Contributor',
+    license: 'CC BY-SA 4.0',
+  };
+}
+
+/**
+ * Records a "still here" ground truth verification.
+ */
+export async function verifyPlant(
+  plantId: string,
+  verificationType: 'still_here',
+  userLat?: number,
+  userLng?: number
+): Promise<{ success: boolean }> {
+  if (!isMockClient) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase.from('verifications') as any).insert({
+        plant_id: plantId,
+        verification_type: verificationType,
+        user_lat: userLat || null,
+        user_lng: userLng || null,
+      });
+      return { success: true };
+    } catch (e) {
+      console.warn('Supabase verification insert error:', e);
+    }
+  }
+
+  const db = await loadMockDb();
+  if (db) {
+    const p = db.plants.find((plant) => plant.id === plantId);
+    if (p) {
+      p.last_verified_at = new Date().toISOString();
+    }
+  }
+  return { success: true };
+}
+
+/**
+ * Records a report (such as "it's gone", "wrong species", etc.).
+ */
+export async function reportPlant(
+  plantId: string,
+  reportType: 'gone' | 'wrong_species' | 'spam' | 'private_property_violation',
+  details?: string
+): Promise<{ success: boolean; newStatus?: string }> {
+  if (!isMockClient) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase.from('reports') as any).insert({
+        plant_id: plantId,
+        report_type: reportType,
+        details: details || null,
+      });
+      return { success: true };
+    } catch (e) {
+      console.warn('Supabase report error:', e);
+    }
+  }
+
+  const db = await loadMockDb();
+  if (db) {
+    const p = db.plants.find((plant) => plant.id === plantId);
+    if (p && reportType === 'gone') {
+      // Mock negative verification: mark as reported_gone
+      p.last_verified_at = '2020-01-01T00:00:00Z';
+      return { success: true, newStatus: 'reported_gone' };
+    }
+  }
+  return { success: true };
+}
+
+export const plantsApi = {
+  fetchNearestPlants,
+  fetchAllSpecies,
+  addPlant,
+  verifyPlant,
+  reportPlant,
+  calculateDistanceMeters,
+};

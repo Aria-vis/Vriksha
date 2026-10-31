@@ -9,6 +9,9 @@ interface HeaderProps {
   onRequestGPS: () => void;
   isLocating: boolean;
   onOpenAddModal: () => void;
+  onOpenAuthModal?: () => void;
+  userPoints?: number;
+  isAuthenticated?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,6 +21,9 @@ export const Header: React.FC<HeaderProps> = ({
   onRequestGPS,
   isLocating,
   onOpenAddModal,
+  onOpenAuthModal,
+  userPoints = 0,
+  isAuthenticated = false,
 }) => {
   const [showCityMenu, setShowCityMenu] = useState<boolean>(false);
 
@@ -97,6 +103,16 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Action Buttons */}
       <div className="flex items-center space-x-2">
+        {/* User Points / Auth Trigger */}
+        <button
+          onClick={onOpenAuthModal}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-900/80 hover:bg-emerald-800/90 text-white rounded-full text-xs font-semibold border border-emerald-700/60 transition-colors"
+          title={isAuthenticated ? 'Contributor Profile' : 'Sign in to sync points'}
+        >
+          <span className="text-amber-300">🌿</span>
+          <span className="font-mono">{userPoints} pts</span>
+        </button>
+
         {/* Locate me quick button */}
         <button
           onClick={onRequestGPS}

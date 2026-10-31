@@ -5,9 +5,13 @@ import MapContainer from './components/map/MapContainer';
 import NearestBottomSheet from './components/map/NearestBottomSheet';
 import PlantDetailSheet from './components/plant/PlantDetailSheet';
 import ProximityPromptCard from './components/common/ProximityPromptCard';
+import { OfflineBadge } from './components/common/OfflineBadge';
+import { AddPlantModal } from './components/forms/AddPlantModal';
+import { AuthModal } from './components/common/AuthModal';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useFreshnessPrompt } from './hooks/useFreshnessPrompt';
-import { fetchNearestPlants, fetchAllSpecies } from './services/plantsApi';
+import { useAuth } from './hooks/useAuth';
+import { plantsApi } from './services/plantsApi';
 import { PlantSearchResult, Species, UseTag, FreshnessStatus } from './types/plant';
 
 export const App: React.FC = () => {
@@ -19,6 +23,12 @@ export const App: React.FC = () => {
     requestGPSLocation,
     selectCityPreset,
   } = useGeolocation();
+
+  const { profile, isAuthenticated, awardPoints } = useAuth();
+
+  // Modal states
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   // Filters state
   const [selectedUseTags, setSelectedUseTags] = useState<UseTag[]>([]);
@@ -34,7 +44,7 @@ export const App: React.FC = () => {
 
   // Load master species catalog
   useEffect(() => {
-    fetchAllSpecies().then((species) => {
+    plantsApi.fetchAllSpecies().then((species) => {
       setAllSpecies(species);
     });
   }, []);
@@ -44,7 +54,7 @@ export const App: React.FC = () => {
     if (!coords) return;
     setIsLoading(true);
     try {
-      const results = await fetchNearestPlants(coords.lat, coords.lng, {
+      const results = await plantsApi.fetchNearestPlants(coords.lat, coords.lng, {
         query: searchQuery,
         use_tags: selectedUseTags,
         in_season_only: inSeasonOnly,
@@ -93,31 +103,37 @@ export const App: React.FC = () => {
 
   // Handlers for "Still Here" / "Report Gone"
   const handleVerifyStillHere = async (plantId: string) => {
-    setPlants((prev) =>
-      prev.map((p) =>
-        p.id === plantId
-          ? {
-              ...p,
-              status: 'recently_verified',
-              last_verified_at: new Date().toISOString(),
-              verification_count: p.verification_count + 1,
-            }
-          : p
-      )
-    );
-  };
-
-  const handleReportGone = async (plantId: string) => {
-    // If reporting gone, remove from view or mark as gone
-    setPlants((prev) => prev.filter((p) => p.id !== plantId));
-    if (selectedPlant?.id === plantId) {
-      setSelectedPlant(null);
+    try {
+      await plantsApi.verifyPlant(plantId, 'still_here', coords?.lat, coords?.lng);
+      awardPoints(2, 'Verified plant still here');
+      setPlants((prev) =>
+        prev.map((p) =>
+          p.id === plantId
+            ? {
+                ...p,
+                status: 'recently_verified',
+                last_verified_at: new Date().toISOString(),
+                verification_count: p.verification_count + 1,
+              }
+            : p
+        )
+      );
+    } catch (e) {
+      console.error('Failed to verify plant:', e);
     }
   };
 
-  const handleOpenAddModal = () => {
-    // Scaffolded for M3
-    alert('Plant submission wizard will open here (Milestone 3)!');
+  const handleReportGone = async (plantId: string) => {
+    try {
+      await plantsApi.reportPlant(plantId, 'gone');
+      awardPoints(2, 'Reported plant gone');
+      setPlants((prev) => prev.filter((p) => p.id !== plantId));
+      if (selectedPlant?.id === plantId) {
+        setSelectedPlant(null);
+      }
+    } catch (e) {
+      console.error('Failed to report plant:', e);
+    }
   };
 
   return (
@@ -129,7 +145,10 @@ export const App: React.FC = () => {
         onSelectCityPreset={selectCityPreset}
         onRequestGPS={requestGPSLocation}
         isLocating={isLocating}
-        onOpenAddModal={handleOpenAddModal}
+        onOpenAddModal={() => setIsAddModalOpen(true)}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        userPoints={profile?.points || 0}
+        isAuthenticated={isAuthenticated}
       />
 
       {/* 2. Filter Chips Strip */}
@@ -170,9 +189,12 @@ export const App: React.FC = () => {
           onSearchChange={setSearchQuery}
           selectedPlant={selectedPlant}
           onSelectPlant={(plant) => setSelectedPlant(plant)}
-          onOpenAddModal={handleOpenAddModal}
+          onOpenAddModal={() => setIsAddModalOpen(true)}
           activeCityName={activeCityName}
         />
+
+        {/* 6. Offline status badge */}
+        <OfflineBadge />
 
         {/* Loading indicator */}
         {isLoading && (
@@ -182,7 +204,7 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* 6. Plant Detail Full Sheet Modal */}
+      {/* 7. Plant Detail Full Sheet Modal */}
       {selectedPlant && (
         <PlantDetailSheet
           plant={selectedPlant}
@@ -190,9 +212,24 @@ export const App: React.FC = () => {
           onClose={() => setSelectedPlant(null)}
           onVerifyStillHere={handleVerifyStillHere}
           onReportGone={handleReportGone}
-          onAddPhoto={() => alert('Photo upload with client compression will open here (Milestone 3)!')}
+          onAddPhoto={() => setIsAddModalOpen(true)}
         />
       )}
+
+      {/* 8. Add Plant Wizard Modal */}
+      <AddPlantModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        currentLat={coords?.lat || 25.3176}
+        currentLng={coords?.lng || 82.9739}
+        onPlantAdded={loadPlants}
+      />
+
+      {/* 9. Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
 };
