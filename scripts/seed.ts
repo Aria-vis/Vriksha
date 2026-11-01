@@ -12,6 +12,21 @@ const __dirname = path.dirname(__filename);
 async function runSeed() {
   console.log('🌱 [Vriksha Seed Engine] Starting dataset preparation...');
 
+  // Auto-load .env if not loaded by process
+  const envPath = path.resolve(__dirname, '../.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    for (const line of envContent.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const [k, ...v] = trimmed.split('=');
+        if (k && !process.env[k.trim()]) {
+          process.env[k.trim()] = v.join('=').trim();
+        }
+      }
+    }
+  }
+
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
   const isRealSupabase = supabaseUrl && !supabaseUrl.includes('mock.supabase.co') && serviceRoleKey && !serviceRoleKey.includes('mock');
