@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, HelpCircle, Check, Sparkles } from 'lucide-react';
+import { Search, HelpCircle, Check, Sparkles, ShieldCheck } from 'lucide-react';
 import { Species, UseTag } from '../../types/plant';
 import { plantsApi } from '../../services/plantsApi';
 
@@ -150,6 +150,12 @@ export const SpeciesPicker: React.FC<SpeciesPickerProps> = ({
                     <span className="text-xs font-bold text-gray-900">
                       {sp.common_name_hi} ({sp.common_name_en})
                     </span>
+                    {sp.is_restricted && (
+                      <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 rounded text-[10px] font-semibold flex items-center gap-0.5 shrink-0" title="Protected Species - Approximate ~5km coordinates will be shown">
+                        <ShieldCheck className="w-3 h-3 text-amber-700" />
+                        <span>Protected</span>
+                      </span>
+                    )}
                     {sp.use_tags.includes('puja') && (
                       <Sparkles className="w-3 h-3 text-amber-500 inline-block flex-shrink-0" />
                     )}

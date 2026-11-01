@@ -130,6 +130,7 @@ export async function fetchNearestPlants(
     }
 
     // Filter by freshness status
+    if (p.status === 'reported_gone') continue; // Hide reported gone
     const currentStatus = computeFreshnessStatus(p.last_verified_at, sp.plant_type);
     if (currentStatus === 'reported_gone') continue; // Hide reported gone
 
@@ -410,6 +411,7 @@ export async function reportPlant(
     const p = db.plants.find((plant) => plant.id === plantId);
     if (p && reportType === 'gone') {
       // Mock negative verification: mark as reported_gone
+      p.status = 'reported_gone';
       p.last_verified_at = '2020-01-01T00:00:00Z';
       return { success: true, newStatus: 'reported_gone' };
     }

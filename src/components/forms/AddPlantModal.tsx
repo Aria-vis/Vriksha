@@ -12,6 +12,7 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
+  ShieldCheck,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Species, LandType } from '../../types/plant';
@@ -344,6 +345,18 @@ export const AddPlantModal: React.FC<AddPlantModalProps> = ({
                   Specify land ownership and verify pin coordinates.
                 </p>
               </div>
+
+              {selectedSpecies?.is_restricted && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 text-xs text-amber-900">
+                  <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold">Protected Flora Safeguard: </span>
+                    <span>
+                      Because {selectedSpecies.common_name_en} is a protected species vulnerable to commercial exploitation, its public location will automatically be fuzzed to a ~5 km approximate centroid under ADR 002.
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <LocationAdjuster
                 lat={lat}

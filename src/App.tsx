@@ -71,24 +71,31 @@ export const App: React.FC = () => {
     });
   }, []);
 
+  const isModeratorUser = Boolean(profile?.role === 'moderator' || profile?.role === 'admin');
+
   // Fetch nearest plants whenever coords or filters change
   const loadPlants = useCallback(async () => {
     if (!coords) return;
     setIsLoading(true);
     try {
-      const results = await plantsApi.fetchNearestPlants(coords.lat, coords.lng, {
-        query: searchQuery,
-        use_tags: selectedUseTags,
-        in_season_only: inSeasonOnly,
-        freshness_statuses: selectedFreshness,
-      });
+      const results = await plantsApi.fetchNearestPlants(
+        coords.lat,
+        coords.lng,
+        {
+          query: searchQuery,
+          use_tags: selectedUseTags,
+          in_season_only: inSeasonOnly,
+          freshness_statuses: selectedFreshness,
+        },
+        isModeratorUser
+      );
       setPlants(results);
     } catch (err) {
       console.error('Failed to load nearest plants:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [coords, searchQuery, selectedUseTags, inSeasonOnly, selectedFreshness]);
+  }, [coords, searchQuery, selectedUseTags, inSeasonOnly, selectedFreshness, isModeratorUser]);
 
   useEffect(() => {
     loadPlants();
@@ -173,7 +180,7 @@ export const App: React.FC = () => {
         onOpenModerationModal={() => setIsModerationModalOpen(true)}
         userPoints={profile?.points || 0}
         isAuthenticated={isAuthenticated}
-        isModerator={profile?.role === 'moderator' || profile?.role === 'admin' || true}
+        isModerator={isModeratorUser}
       />
 
       {/* 2. Upcoming Festivals & Puja Mode Strip */}
